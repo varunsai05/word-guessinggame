@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill to Word</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f0f0f0, #d9d9d9);
+            animation: backgroundAnimation 10s infinite alternate;
+        }
+        @keyframes backgroundAnimation {
+            0% { background-color: #f0f0f0; }
+            100% { background-color: #d9d9d9; }
+        }
+        .game-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .hidden {
+            display: none;
+        }
+        img{
+            width: 1000px;
+            height:500px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container game-container">
+    <div id="welcome">
+        <h1>Welcome to Bill to word!</h1>
+        <p>Instructions: Guess the word based on the image shown. You can use hints, but it will cost you points!</p>
+        <button id="startGame" class="btn btn-primary">Start Game</button>
+    </div>
+
+    <div id="game" class="hidden">
+        <h2 id="levelTitle">Level 1</h2>
+        <p>Score: <span id="score">0</span></p>
+        <img id="wordImage" src="apple.jpg" alt="Guess the word" class="img-fluid">
+        <div id="hintContainer">
+            <button id="hintButton" class="btn btn-warning">Hint</button>
+            <div id="hint" class="hidden"></div>
+        </div>
+        <input type="text" id="answerInput" placeholder="Enter your answer" class="form-control">
+        <button id="submitAnswer" class="btn btn-success">Submit Answer</button>
+        <div id="result" class="hidden"></div>
+        <button id="tryAgain" class="hidden btn btn-secondary">Try Again</button>
+        <button id="back" class="hidden btn btn-secondary">Back</button>
+    </div>
+</div>
+
+<script>
+    let score = 0;
+    let level = 1;
+    const words = [
+        { name: "legislative", image: "level1.png" },
+        { name: "constitution", image: "level2.png" },
+        { name: "freedom", image: "level3.png" },
+        { name: "democracy", image: "level4.png" },
+        { name: "fundamental", image: "level5.png" },
+        { name: "amendment", image: "level6.png" },
+        { name: "discrimination", image: "level7.png" },
+        { name: "republic", image: "level8.png" },
+        { name: "independent", image: "level9.png" },
+        { name: "preamble", image: "level10.png" }
+    ];
+
+    document.getElementById('startGame').onclick = function() {
+        document.getElementById('welcome').classList.add('hidden');
+        document.getElementById('game').classList.remove('hidden');
+        loadLevel();
+    };
+
+    function loadLevel() {
+        document.getElementById('levelTitle').innerText = `Level ${level}`;
+        document.getElementById('wordImage').src = words[level - 1].image;
+        document.getElementById('score').innerText = score;
+        document.getElementById('hint').classList.add('hidden');
+        document.getElementById('result').classList.add('hidden');
+        document.getElementById('tryAgain').classList.add('hidden');
+        document.getElementById('back').classList.add('hidden');
+        document.getElementById('answerInput').classList.remove('hidden'); // Ensure input box is visible
+        document.getElementById('submitAnswer').classList.remove('hidden'); // Ensure submit button is visible
+    }
+
+    document.getElementById('hintButton').onclick = function() {
+        if (confirm("Using a hint will cost you -10 points. Do you want to continue?")) {
+            score -= 10;
+            document.getElementById('score').innerText = score;
+            document.getElementById('hint').innerText = `The word starts with: ${words[level - 1].name.charAt(0)}`;
+            document.getElementById('hint').classList.remove('hidden');
+        }
+    };
+
+    document.getElementById('submitAnswer').onclick = function() {
+        const answer = document.getElementById('answerInput').value.toLowerCase();
+        if (answer === words[level - 1].name) {
+            score += 25;
+            level++;
+            document.getElementById('answerInput').value = ''; // Clear input box
+            if (level > words.length) {
+                alert("Congratulations! You've completed all levels!");
+                resetGame();
+            } else {
+                loadLevel();
+            }
+        } else {
+            document.getElementById('result').innerText = `Current Score: ${score}. Game Over!`;
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('answerInput').classList.add('hidden');
+            document.getElementById('submitAnswer').classList.add('hidden'); // Hide submit button
+            document.getElementById('tryAgain').classList.remove('hidden');
+        }
+    };
+
+    document.getElementById('tryAgain').onclick = function() {
+        document.getElementById('game').classList.add('hidden');
+        document.getElementById('welcome').classList.remove('hidden');
+        resetGame();
+    };
+
+    document.getElementById('back').onclick = function() {
+        document.getElementById('game').classList.add('hidden');
+        document.getElementById('welcome').classList.remove('hidden');
+        resetGame();
+    };
+
+    function resetGame() {
+        score = 0;
+        level = 1;
+        document.getElementById('score').innerText = score;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('hint').classList.add('hidden');
+        document.getElementById('result').classList.add('hidden');
+        document.getElementById('submitAnswer').classList.remove('hidden'); // Show submit button again
+    }
+</script>
+
+</body>
+</html>
